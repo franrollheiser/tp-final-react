@@ -1,8 +1,12 @@
 import { useEffect, useState } from 'react';
 import { obtenerUsuarios } from '../services/api';
+import { useDispatch, useSelector } from 'react-redux';
+import { setUsuarios } from '../store/usuariosSlice';
 
 function Listado() {
-  const [usuarios, setUsuarios] = useState([]);
+  const dispatch = useDispatch();
+  const usuarios = useSelector(
+  (state) => state.usuarios.usuarios);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
   const [busqueda, setBusqueda] = useState('');
@@ -11,7 +15,7 @@ function Listado() {
     const cargarDatos = async () => {
       try {
         const data = await obtenerUsuarios();
-        setUsuarios(data);
+        dispatch(setUsuarios(data));
       } catch (err) {
         setError(err.message);
       } finally {
@@ -33,6 +37,7 @@ function Listado() {
   return (
     <div>
       <h1>Listado de Usuarios</h1>
+      <p>Total de usuarios: {usuarios.length}</p>
 
       {/* 🔍 INPUT BUSCADOR */}
       <input
@@ -52,11 +57,7 @@ function Listado() {
         {usuariosFiltrados.map((user) => (
           <li
             key={user.id}
-            style={{
-              border: '1px solid gray',
-              padding: '10px',
-              marginBottom: '10px'
-            }}
+            className="card"
           >
             <h3>{user.name}</h3>
             <p>{user.email}</p>
